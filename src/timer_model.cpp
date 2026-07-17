@@ -6,6 +6,11 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
     m_timer = new QTimer(this);
     m_timer->callOnTimeout([this]()
                            {
+        if (m_in_work_session)
+        {
+            m_timer_stats.ms_worked += 1000;
+            emit statsChanged(m_timer_stats);
+        }
         this->modifyTime(-1000);
         emit this->timerChanged(m_time); });
 }
@@ -67,14 +72,23 @@ void TimerModel::stopTimer()
             m_work_sessions_elapsed = 0;
             m_time = DEFAULT_LONG_BREAK_TIMER_VALUE;
         }
+
+        m_timer_stats.work_sessions++;
     }
     else
     {
 
         m_in_work_session = true;
         m_time = DEFAULT_WORK_TIMER_VALUE;
+        m_timer_stats.breaks++;
     }
 
+    emit statsChanged(m_timer_stats);
     emit timerStateChanged(m_timer_state);
     emit timerChanged(m_time);
+}
+
+TimerStats TimerModel::getStats()
+{
+    return m_timer_stats;
 }

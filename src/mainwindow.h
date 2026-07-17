@@ -21,4 +21,5 @@ class MainAppWindow : public QMainWindow {
     private:
         Ui::MainAppWindow *m_ui;
         TimerModel *m_timer_model;
+        void setStatsText(TimerStats timer_stats);
 };

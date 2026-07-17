@@ -1,5 +1,6 @@
 #include <string>
 
 namespace utils {
-    std::string formatMs(int time);
+    std::string formatMMSS(int ms);
+    std::string formatHHMMSS(int ms);
 }

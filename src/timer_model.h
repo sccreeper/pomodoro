@@ -9,6 +9,12 @@ const int DEFAULT_WORK_TIMER_VALUE = 25 * 60 * 1000;
 const int DEFAULT_BREAK_TIMER_VALUE = 5 * 60 * 1000;
 const int DEFAULT_LONG_BREAK_TIMER_VALUE = 15 * 60 * 1000;
 
+struct TimerStats {
+    int work_sessions;
+    int breaks;
+    int ms_worked;
+};
+
 class TimerModel : public QObject {
     Q_OBJECT
 
@@ -16,6 +22,7 @@ public:
     explicit TimerModel(QObject *parent = nullptr);
 
     int getTime();
+    TimerStats getStats();
 
 public slots:
     void startPauseTimer();
@@ -24,6 +31,7 @@ public slots:
 signals:
     void timerChanged(int newTime);
     void timerStateChanged(TimerState state);
+    void statsChanged(TimerStats newStats);
 
 private:
     /// @brief Current time left on timer, in msec
@@ -36,6 +44,7 @@ private:
     int m_work_sessions_elapsed = 0;
     bool m_in_work_session = true;
     
+    TimerStats m_timer_stats{};
 
     void modifyTime(int delta);
 };
