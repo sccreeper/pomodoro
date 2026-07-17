@@ -23,6 +23,7 @@ public:
 
     int getTime();
     TimerStats getStats();
+    bool inWorkSession();
 
 public slots:
     void startPauseTimer();

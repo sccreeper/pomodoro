@@ -8,9 +8,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     MainAppWindow w;
-    w.show(); // Because 'w' has no parent, it becomes a visible window
-
-    qDebug() << "Widget Geometry:" << w.geometry();
+    w.show();
     
     return a.exec();
 }

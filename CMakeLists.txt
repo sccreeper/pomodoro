@@ -23,6 +23,8 @@ qt_add_executable(apppomo_qt_app
     src/window.ui
 )
 
+qt_add_resources(apppomo_qt_app "images" PREFIX "/" FILES "resources/icon.png")
+
 target_link_libraries(apppomo_qt_app
     PRIVATE
         Qt6::Core

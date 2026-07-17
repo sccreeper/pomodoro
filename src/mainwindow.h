@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include "timer_model.h"
+#include <QSystemTrayIcon>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainAppWindow;}
@@ -22,4 +23,6 @@ class MainAppWindow : public QMainWindow {
         Ui::MainAppWindow *m_ui;
         TimerModel *m_timer_model;
         void setStatsText(TimerStats timer_stats);
+        QSystemTrayIcon *m_sys_tray;
+        void closeEvent(QCloseEvent *event) override;
 };

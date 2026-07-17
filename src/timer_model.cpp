@@ -92,3 +92,7 @@ TimerStats TimerModel::getStats()
 {
     return m_timer_stats;
 }
+
+bool TimerModel::inWorkSession() {
+    return m_in_work_session;
+}
