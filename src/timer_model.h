@@ -33,5 +33,9 @@ private:
 
     TimerState m_timer_state = stopped;
 
+    int m_work_sessions_elapsed = 0;
+    bool m_in_work_session = true;
+    
+
     void modifyTime(int delta);
 };

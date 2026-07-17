@@ -1,56 +1,79 @@
 #include "timer_model.h"
 #include <QTimer>
-#include <iostream>
 
-TimerModel::TimerModel(QObject *parent) : QObject(parent) {
+TimerModel::TimerModel(QObject *parent) : QObject(parent)
+{
     m_timer = new QTimer(this);
-    m_timer->callOnTimeout([this](){
+    m_timer->callOnTimeout([this]()
+                           {
         this->modifyTime(-1000);
-        emit this->timerChanged(m_time);
-    });
+        emit this->timerChanged(m_time); });
 }
 
-int TimerModel::getTime() {
+int TimerModel::getTime()
+{
     return m_time;
 }
 
-void TimerModel::modifyTime(int delta) {
+void TimerModel::modifyTime(int delta)
+{
 
     if (m_time + delta <= 0)
     {
         m_time = 0;
         this->stopTimer();
-    } else {
+    }
+    else
+    {
         m_time += delta;
     }
-    
 }
 
-void TimerModel::startPauseTimer() {
+void TimerModel::startPauseTimer()
+{
 
     if (m_timer_state == running)
     {
-        std::cout << "Timer Active, pausing\n";
-        
+
         m_timer->stop();
         m_timer_state = paused;
-    
-    } else {
-        
-        std::cout << "Timer Paused or stopped, starting!\n";
+    }
+    else
+    {
 
         m_timer->start(1000);
         m_timer_state = running;
     }
 
     emit timerStateChanged(m_timer_state);
-    
 }
 
-void TimerModel::stopTimer() {
+void TimerModel::stopTimer()
+{
     m_timer->stop();
-    m_time = DEFAULT_WORK_TIMER_VALUE;
     m_timer_state = stopped;
+
+    if (m_in_work_session)
+    {
+        m_work_sessions_elapsed++;
+        m_in_work_session = false;
+
+        if (m_work_sessions_elapsed < 4)
+        {
+            m_time = DEFAULT_BREAK_TIMER_VALUE;
+        }
+        else
+        {
+            m_work_sessions_elapsed = 0;
+            m_time = DEFAULT_LONG_BREAK_TIMER_VALUE;
+        }
+    }
+    else
+    {
+
+        m_in_work_session = true;
+        m_time = DEFAULT_WORK_TIMER_VALUE;
+    }
 
     emit timerStateChanged(m_timer_state);
     emit timerChanged(m_time);
