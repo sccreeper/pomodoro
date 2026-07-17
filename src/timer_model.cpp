@@ -53,4 +53,5 @@ void TimerModel::stopTimer() {
     m_timer_state = stopped;
 
     emit timerStateChanged(m_timer_state);
+    emit timerChanged(m_time);
 }
