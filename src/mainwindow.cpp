@@ -2,6 +2,7 @@
 #include "ui_window.h"
 #include "timer_model.h"
 #include "utils.h"
+#include "config.h"
 #include <iostream>
 #include <format>
 #include <QCloseEvent>
@@ -12,6 +13,7 @@ MainAppWindow::MainAppWindow(QWidget *parent)
     this->setWindowIcon(QIcon(":resources/icon.png"));
     
     m_ui->setupUi(this);
+    m_timer_model = new TimerModel(this);
 
     m_sys_tray = new QSystemTrayIcon(QIcon(":resources/icon.png"), this);
     m_sys_tray->show();
@@ -31,7 +33,8 @@ MainAppWindow::MainAppWindow(QWidget *parent)
 
     m_sys_tray->setContextMenu(system_tray_menu);
 
-    connect(quit_app_action, &QAction::triggered, this, [](){
+    connect(quit_app_action, &QAction::triggered, this, [this](){
+        this->m_timer_model->saveConfig();
         QApplication::quit();
     });
     connect(refocus_app_action, &QAction::triggered, this, &QMainWindow::show);
@@ -39,9 +42,8 @@ MainAppWindow::MainAppWindow(QWidget *parent)
     m_ui->stopButton->setText(TIMER_SKIP);
     m_ui->startPauseButton->setText(TIMER_START);
 
-    m_timer_model = new TimerModel(this);
     m_ui->timerText->setText(QString::fromStdString(utils::formatMMSS(m_timer_model->getTime())));
-    setStatsText(TimerStats{});
+    setStatsText(m_timer_model->getStats());
 
     connect(m_ui->startPauseButton, &QPushButton::clicked, m_timer_model, &TimerModel::startPauseTimer);
     connect(m_ui->stopButton, &QPushButton::clicked, m_timer_model, &TimerModel::stopTimer);

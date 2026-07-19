@@ -1,5 +1,9 @@
 #include "timer_model.h"
 #include <QTimer>
+#include <QStandardPaths>
+#include <QDir>
+#include <QFile>
+#include "config.h"
 
 TimerModel::TimerModel(QObject *parent) : QObject(parent)
 {
@@ -9,10 +13,50 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
         if (m_in_work_session)
         {
             m_timer_stats.ms_worked += 1000;
+            m_config.total_time_elapsed += 1000;
             emit statsChanged(m_timer_stats);
         }
         this->modifyTime(-1000);
         emit this->timerChanged(m_time); });
+
+    // Load config
+
+    QString config_path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+
+    QDir dir(config_path);
+    if (!dir.exists() && !dir.mkpath(config_path))
+    {
+        qWarning() << "Failed to create configuration directory at " << config_path;
+    }
+
+    m_full_config_path = dir.filePath("config.json").toStdString();
+
+    qInfo() << "Configuration directory located at " << config_path;
+
+    if (QFile::exists(QString::fromStdString(m_full_config_path)))
+    {
+        qInfo() << "Config file found at" << m_full_config_path;
+        
+        m_config = Config::loadConfig(m_full_config_path);
+    }
+    else
+    {
+
+        qInfo() << "Writing default configuration file to " << m_full_config_path;
+
+        QFile default_config(":resources/default_config.json");
+
+        if (!default_config.copy(QString::fromStdString(m_full_config_path)))
+            qWarning() << "Failed to copy default configuration file.";
+
+        QFile::setPermissions(QString::fromStdString(m_full_config_path), QFileDevice::ReadOwner|QFileDevice::WriteOwner);
+
+        m_config = Config::loadConfig(m_full_config_path);
+    }
+
+    m_timer_stats.breaks = m_config.total_breaks;
+    m_timer_stats.work_sessions = m_config.total_work_sessions;
+    m_timer_stats.ms_worked = m_config.total_time_elapsed;
 }
 
 int TimerModel::getTime()
@@ -74,6 +118,7 @@ void TimerModel::stopTimer()
         }
 
         m_timer_stats.work_sessions++;
+        m_config.total_work_sessions++;
     }
     else
     {
@@ -81,6 +126,7 @@ void TimerModel::stopTimer()
         m_in_work_session = true;
         m_time = DEFAULT_WORK_TIMER_VALUE;
         m_timer_stats.breaks++;
+        m_config.total_breaks++;
     }
 
     emit statsChanged(m_timer_stats);
@@ -93,6 +139,12 @@ TimerStats TimerModel::getStats()
     return m_timer_stats;
 }
 
-bool TimerModel::inWorkSession() {
+bool TimerModel::inWorkSession()
+{
     return m_in_work_session;
+}
+
+void TimerModel::saveConfig()
+{
+    Config::saveConfig(m_full_config_path, m_config);
 }

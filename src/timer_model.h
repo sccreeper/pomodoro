@@ -2,6 +2,8 @@
 
 #include <QObject>
 #include <QTimer>
+#include "config.h"
+#include <string>
 
 enum TimerState {running, paused, stopped};
 
@@ -25,6 +27,9 @@ public:
     TimerStats getStats();
     bool inWorkSession();
 
+    Config::PomoConfig m_config{};
+    void saveConfig();
+
 public slots:
     void startPauseTimer();
     void stopTimer();
@@ -44,6 +49,8 @@ private:
 
     int m_work_sessions_elapsed = 0;
     bool m_in_work_session = true;
+
+    std::string m_full_config_path;
     
     TimerStats m_timer_stats{};
 
