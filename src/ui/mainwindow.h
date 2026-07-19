@@ -19,6 +19,9 @@ class MainAppWindow : public QMainWindow {
         explicit MainAppWindow(QWidget *parent = nullptr);
         ~MainAppWindow();
 
+    private slots:
+        void openSettingsDialog();
+
     private:
         Ui::MainAppWindow *m_ui;
         TimerModel *m_timer_model;

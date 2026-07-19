@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "ui/mainwindow.h"
 #include "timer_model.h"
 #include <QApplication>
 #include <QDebug>

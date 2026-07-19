@@ -15,16 +15,15 @@ qt_standard_project_setup()
 
 qt_add_executable(apppomo_qt_app
     src/main.cpp
-    src/mainwindow.h
-    src/mainwindow.cpp
     src/timer_model.h
     src/timer_model.cpp
     src/utils.h
     src/utils.cpp
-    src/window.ui
     src/config.h
     src/config.cpp
 )
+target_include_directories(apppomo_qt_app PRIVATE src)
+add_subdirectory(src/ui)
 
 qt_add_resources(apppomo_qt_app "resources" PREFIX "/" 
     FILES 

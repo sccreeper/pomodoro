@@ -54,6 +54,7 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
         m_config = Config::loadConfig(m_full_config_path);
     }
 
+    m_time = m_config.work_session_duration;
     m_timer_stats.breaks = m_config.total_breaks;
     m_timer_stats.work_sessions = m_config.total_work_sessions;
     m_timer_stats.ms_worked = m_config.total_time_elapsed;
@@ -109,12 +110,12 @@ void TimerModel::stopTimer()
 
         if (m_work_sessions_elapsed < 4)
         {
-            m_time = DEFAULT_BREAK_TIMER_VALUE;
+            m_time = m_config.short_break_duration;
         }
         else
         {
             m_work_sessions_elapsed = 0;
-            m_time = DEFAULT_LONG_BREAK_TIMER_VALUE;
+            m_time = m_config.long_break_duration;
         }
 
         m_timer_stats.work_sessions++;
@@ -124,7 +125,7 @@ void TimerModel::stopTimer()
     {
 
         m_in_work_session = true;
-        m_time = DEFAULT_WORK_TIMER_VALUE;
+        m_time = m_config.work_session_duration;
         m_timer_stats.breaks++;
         m_config.total_breaks++;
     }

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "settingsdialog.h"
 #include "ui_window.h"
 #include "timer_model.h"
 #include "utils.h"
@@ -27,8 +28,10 @@ MainAppWindow::MainAppWindow(QWidget *parent)
     system_tray_menu->addSeparator();
 
     QAction *refocus_app_action = new QAction("Open", this);
+    QAction *settings_dialog_action = new QAction("Settings", this);
     QAction *quit_app_action = new QAction("Quit", this);
     system_tray_menu->addAction(refocus_app_action);
+    system_tray_menu->addAction(settings_dialog_action);
     system_tray_menu->addAction(quit_app_action);
 
     m_sys_tray->setContextMenu(system_tray_menu);
@@ -38,6 +41,8 @@ MainAppWindow::MainAppWindow(QWidget *parent)
         QApplication::quit();
     });
     connect(refocus_app_action, &QAction::triggered, this, &QMainWindow::show);
+
+    connect(settings_dialog_action, &QAction::triggered, this, &MainAppWindow::openSettingsDialog);
 
     m_ui->stopButton->setText(TIMER_SKIP);
     m_ui->startPauseButton->setText(TIMER_START);
@@ -103,4 +108,27 @@ void MainAppWindow::setStatsText(TimerStats timer_stats)
 void MainAppWindow::closeEvent(QCloseEvent *event) {
     event->ignore();
     this->hide();
+}
+
+void MainAppWindow::openSettingsDialog() {
+
+    SettingsDialog dialog;
+
+    dialog.setWorkSessionDuration(m_timer_model->m_config.work_session_duration);
+    dialog.setShortBreakDuration(m_timer_model->m_config.short_break_duration);
+    dialog.setLongBreakDuration(m_timer_model->m_config.long_break_duration);
+
+    int result = dialog.exec();
+
+    if (result == QDialog::Accepted)
+    {
+        
+        this->m_timer_model->m_config.work_session_duration = dialog.getWorkSessionDuration();
+        this->m_timer_model->m_config.short_break_duration = dialog.getShortBreakDuration();
+        this->m_timer_model->m_config.long_break_duration = dialog.getLongBreakDuration();
+
+        this->m_timer_model->saveConfig();
+
+    }
+    
 }
