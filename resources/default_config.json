@@ -2,7 +2,7 @@
     "total_work_sessions" : 0,
     "total_breaks" : 0,
     "total_time_elapsed" : 0,
-    "work_session_duration" : 150000000,
+    "work_session_duration" : 1500000,
     "short_break_duration" : 300000,
     "long_break_duration" : 900000
 }

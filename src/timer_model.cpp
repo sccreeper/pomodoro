@@ -14,6 +14,7 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
         {
             m_timer_stats.ms_worked += 1000;
             m_config.total_time_elapsed += 1000;
+            m_db->updateEntry(ColumnType::time_worked, 1000);
             emit statsChanged(m_timer_stats);
         }
         this->modifyTime(-1000);
@@ -21,17 +22,17 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
 
     // Load config
 
-    QString config_path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    QString data_path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
-    QDir dir(config_path);
-    if (!dir.exists() && !dir.mkpath(config_path))
+    QDir dir(data_path);
+    if (!dir.exists() && !dir.mkpath(data_path))
     {
-        qWarning() << "Failed to create configuration directory at " << config_path;
+        qWarning() << "Failed to create data directory at " << data_path;
     }
 
     m_full_config_path = dir.filePath("config.json").toStdString();
 
-    qInfo() << "Configuration directory located at " << config_path;
+    qInfo() << "Data directory located at " << data_path;
 
     if (QFile::exists(QString::fromStdString(m_full_config_path)))
     {
@@ -58,6 +59,14 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
     m_timer_stats.breaks = m_config.total_breaks;
     m_timer_stats.work_sessions = m_config.total_work_sessions;
     m_timer_stats.ms_worked = m_config.total_time_elapsed;
+
+    // Instantiate database
+
+    m_db = new Database(this);
+    std::string full_db_path = dir.filePath("stats.db").toStdString();
+    m_db->initDb(full_db_path);
+    m_db->newEntry();
+
 }
 
 int TimerModel::getTime()
@@ -120,6 +129,7 @@ void TimerModel::stopTimer()
 
         m_timer_stats.work_sessions++;
         m_config.total_work_sessions++;
+        m_db->updateEntry(ColumnType::sessions, 1);
     }
     else
     {
@@ -128,6 +138,7 @@ void TimerModel::stopTimer()
         m_time = m_config.work_session_duration;
         m_timer_stats.breaks++;
         m_config.total_breaks++;
+        m_db->updateEntry(ColumnType::breaks, 1);
     }
 
     emit statsChanged(m_timer_stats);

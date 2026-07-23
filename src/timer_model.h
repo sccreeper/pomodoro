@@ -4,6 +4,7 @@
 #include <QTimer>
 #include "config.h"
 #include <string>
+#include "db.h"
 
 enum TimerState {running, paused, stopped};
 
@@ -44,6 +45,7 @@ private:
     int m_time = DEFAULT_WORK_TIMER_VALUE;
     /// @brief QTimer object used for intervals
     QTimer *m_timer;
+    Database *m_db;
 
     TimerState m_timer_state = stopped;
 
