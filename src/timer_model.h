@@ -5,6 +5,9 @@
 #include "config.h"
 #include <string>
 #include "db.h"
+#include <vector>
+#include <array>
+#include <chrono>
 
 enum TimerState {running, paused, stopped};
 
@@ -30,6 +33,8 @@ public:
 
     Config::PomoConfig m_config{};
     void saveConfig();
+
+    std::vector<std::array<int64_t, 2>> getData(ColumnType column, std::chrono::seconds start, std::chrono::seconds end) const;
 
 public slots:
     void startPauseTimer();

@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(nlohmann_json 3.12.0 REQUIRED)
 find_package(unofficial-sqlite3 REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Charts)
 qt_standard_project_setup()
 
 qt_add_executable(apppomo_qt_app
@@ -39,6 +39,7 @@ target_link_libraries(apppomo_qt_app
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::Charts
         nlohmann_json::nlohmann_json
         unofficial::sqlite3::sqlite3
 )

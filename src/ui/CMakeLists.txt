@@ -5,4 +5,7 @@ target_sources(apppomo_qt_app PRIVATE
     settings.ui
     settingsdialog.h
     settingsdialog.cpp
+    stats.ui
+    statsdialog.cpp
+    statsdialog.h
 )

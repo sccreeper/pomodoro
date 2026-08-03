@@ -52,7 +52,7 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
 
         QFile::setPermissions(QString::fromStdString(m_full_config_path), QFileDevice::ReadOwner|QFileDevice::WriteOwner);
 
-        m_config = Config::loadConfig(m_full_config_path);
+        m_config = Config::loadConfig(m_full_config_path);     
     }
 
     m_time = m_config.work_session_duration;
@@ -64,8 +64,7 @@ TimerModel::TimerModel(QObject *parent) : QObject(parent)
 
     m_db = new Database(this);
     std::string full_db_path = dir.filePath("stats.db").toStdString();
-    m_db->initDb(full_db_path);
-    m_db->newEntry();
+    m_db->initDb(full_db_path, true);
 
 }
 
@@ -159,4 +158,8 @@ bool TimerModel::inWorkSession()
 void TimerModel::saveConfig()
 {
     Config::saveConfig(m_full_config_path, m_config);
+}
+
+std::vector<std::array<int64_t, 2>> TimerModel::getData(ColumnType column, std::chrono::seconds start, std::chrono::seconds end) const {
+    return m_db->retrieveEntries(column, start, end);
 }

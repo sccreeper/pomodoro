@@ -21,6 +21,7 @@ class MainAppWindow : public QMainWindow {
 
     private slots:
         void openSettingsDialog();
+        void openStatsDialog();
 
     private:
         Ui::MainAppWindow *m_ui;

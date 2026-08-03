@@ -7,6 +7,7 @@
 #include <iostream>
 #include <format>
 #include <QCloseEvent>
+#include "statsdialog.h"
 
 MainAppWindow::MainAppWindow(QWidget *parent)
     : QMainWindow(parent), m_ui(new Ui::MainAppWindow)
@@ -29,8 +30,10 @@ MainAppWindow::MainAppWindow(QWidget *parent)
 
     QAction *refocus_app_action = new QAction("Open", this);
     QAction *settings_dialog_action = new QAction("Settings", this);
+    QAction *view_stats_action = new QAction("Statistics", this);
     QAction *quit_app_action = new QAction("Quit", this);
     system_tray_menu->addAction(refocus_app_action);
+    system_tray_menu->addAction(view_stats_action);
     system_tray_menu->addAction(settings_dialog_action);
     system_tray_menu->addAction(quit_app_action);
 
@@ -43,6 +46,7 @@ MainAppWindow::MainAppWindow(QWidget *parent)
     connect(refocus_app_action, &QAction::triggered, this, &QMainWindow::show);
 
     connect(settings_dialog_action, &QAction::triggered, this, &MainAppWindow::openSettingsDialog);
+    connect(view_stats_action, &QAction::triggered, this, &MainAppWindow::openStatsDialog);
 
     m_ui->stopButton->setText(TIMER_SKIP);
     m_ui->startPauseButton->setText(TIMER_START);
@@ -131,4 +135,11 @@ void MainAppWindow::openSettingsDialog() {
 
     }
     
+}
+
+void MainAppWindow::openStatsDialog() {
+
+    StatsDialog *dialog = new StatsDialog(this->m_timer_model, std::chrono::seconds{utils::getUnixTimestamp(-7)}, std::chrono::seconds{utils::getUnixTimestamp()}, this);
+    dialog->show();
+
 }
